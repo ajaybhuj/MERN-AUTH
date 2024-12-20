@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
-
+import transporter from "../config/nodemailer.js";
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
@@ -34,6 +34,34 @@ export const register = async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+    //sending welcome email using brevo smpt protocol
+
+    // const mailOptions = {
+    //   from: process.env.SENDER_EMAIL,
+    //   to: email,
+    //   subject: "Welcome to Nepal",
+    //   text: `Welcome to Nepal website . Your account has been created with email address : ${email}`,
+    // };
+
+    // await transporter.sendMail(mailOptions);
+
+    try {
+      const mailOptions = {
+        from: {
+          name: "Nepal Website",
+          address: process.env.SENDER_EMAIL,
+        },
+        to: email,
+        subject: "Welcome to Nepal",
+        text: `Welcome to Nepal website. Your account has been created with email address: ${email}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+    } catch (emailError) {
+      console.error("Email sending failed:", emailError);
+      // Don't return here - we still want to complete the registration
+    }
+
     return res.json({ success: true });
   } catch (error) {
     res.json({
