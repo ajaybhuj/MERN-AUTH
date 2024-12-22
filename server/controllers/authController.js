@@ -36,31 +36,17 @@ export const register = async (req, res) => {
     });
     //sending welcome email using brevo smpt protocol
 
-    // const mailOptions = {
-    //   from: process.env.SENDER_EMAIL,
-    //   to: email,
-    //   subject: "Welcome to Nepal",
-    //   text: `Welcome to Nepal website . Your account has been created with email address : ${email}`,
-    // };
+    const mailOptions = {
+      from: {
+        name: "Nepal Website",
+        address: process.env.SENDER_EMAIL,
+      },
+      to: email,
+      subject: "Welcome to Nepal",
+      text: `Welcome to Nepal website . Your account has been created with email address : ${email}`,
+    };
 
-    // await transporter.sendMail(mailOptions);
-
-    try {
-      const mailOptions = {
-        from: {
-          name: "Nepal Website",
-          address: process.env.SENDER_EMAIL,
-        },
-        to: email,
-        subject: "Welcome to Nepal",
-        text: `Welcome to Nepal website. Your account has been created with email address: ${email}`,
-      };
-
-      await transporter.sendMail(mailOptions);
-    } catch (emailError) {
-      console.error("Email sending failed:", emailError);
-      // Don't return here - we still want to complete the registration
-    }
+    await transporter.sendMail(mailOptions);
 
     return res.json({ success: true });
   } catch (error) {
