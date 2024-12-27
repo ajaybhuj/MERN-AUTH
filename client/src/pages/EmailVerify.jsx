@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { AppContent } from "../context/AppContext";
@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 const EmailVerify = () => {
   axios.defaults.withCredentials = true;
-  const { backendUrl, isLoggedIn, UserData, getUserData } =
+  const { backendUrl, isLoggedin, userData, getUserData } =
     useContext(AppContent);
 
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const EmailVerify = () => {
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault();
-      const { otpArray } = inputRefs.current.map((e) => e.value);
+      const otpArray = inputRefs.current.map((e) => e.value);
       const otp = otpArray.join("");
       const { data } = await axios.post(
         backendUrl + "/api/auth/verify-account",
@@ -56,6 +56,11 @@ const EmailVerify = () => {
       }
     });
   };
+
+  useEffect(() => {
+    isLoggedin && userData && userData.isAccountVerified && navigate("/");
+  }, [isLoggedin, userData]);
+
   return (
     <div className="flex items-center justify-center min-h-screen  bg-gradient-to-br from-blue-200 to-purple-400">
       <img
@@ -81,7 +86,7 @@ const EmailVerify = () => {
               <input
                 ref={(e) => (inputRefs.current[index] = e)}
                 onInput={(e) => handleInput(e, index)}
-                onKeyDown={(e) => handleKeyDown(e.index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
                 type="text"
                 maxLength="1"
                 key={index}
