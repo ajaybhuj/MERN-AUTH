@@ -255,7 +255,7 @@ export const resetPassword = async (req, res) => {
     user.password = hashedPassword;
     user.resetOtp = "";
     user.resetOtpExpireAt = 0;
-    user.save();
+    await user.save();
     return res.json({
       success: true,
       message: "password has beeen changed",
